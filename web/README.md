@@ -61,6 +61,9 @@ The viewer fetches the file via the Drive REST API. That requires a public API k
 3. **Restrict the key** (highly recommended):
    - **Application restrictions → HTTP referrers** → add your GitHub Pages domain,
      e.g. `https://YOUR_USERNAME.github.io/*`
+   - If you use a custom domain like `https://example.com/your-app/`, allow the
+     site origin (for example `https://example.com/*`) rather than just the
+     subpath. Browsers often send only the origin as the cross-site referrer.
    - **API restrictions → Restrict key → Google Drive API**
 4. The key only ever reads files that are explicitly shared as "anyone with link",
    so even if leaked it cannot access anything else in your Drive.
@@ -151,6 +154,12 @@ To change what's exposed, edit `buildStocksSnapshot()` and republish.
 referrer that doesn't match the page URL, or the file isn't shared as "anyone
 with link". In the desktop app, click **Refresh Web Stocks Now** — this
 re-applies the public permission.
+
+**Viewer says just "Failed to fetch" or "Network fetch failed before Drive responded":**
+the browser likely blocked the request before Google Drive returned a JSON error.
+Most commonly this means the API key allows the wrong HTTP referrer. For custom
+domains, allow the origin like `https://example.com/*`, not only
+`https://example.com/your-app/*`.
 
 **Viewer says "Drive fetch failed (404)":** the file was deleted from Drive, or
 the File ID in `config.json` doesn't match the one shown in the desktop app

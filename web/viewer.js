@@ -121,7 +121,21 @@
 
   async function fetchStocks() {
     var url = buildDriveUrl();
-    var res = await fetch(url, { cache: 'no-store' });
+    var res;
+    try {
+      res = await fetch(url, { cache: 'no-store' });
+    } catch (err) {
+      // Browser-level fetch failures usually mean the request never reached
+      // Drive at all: blocked referrer restrictions, extensions, or network.
+      if (err && (err.name === 'TypeError' || /Failed to fetch/i.test(String(err.message || '')))) {
+        throw new Error(
+          'Network fetch failed before Drive responded. ' +
+          'If your Google API key uses HTTP referrer restrictions, allow the site origin ' +
+          '(for example https://asith.cc/*), not a subpath like /LocalBiz/*.'
+        );
+      }
+      throw err;
+    }
 
     if (!res.ok) {
       var bodyText = await res.text().catch(function () { return ''; });
