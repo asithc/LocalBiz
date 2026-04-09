@@ -1,0 +1,5 @@
+{
+  "googleDriveFileId": "PASTE_FILE_ID_FROM_DESKTOP_APP_SETTINGS_HERE",
+  "googleApiKey": "PASTE_GOOGLE_API_KEY_HERE",
+  "pollIntervalSeconds": 30
+}

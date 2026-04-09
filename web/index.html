@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <title>Stocks Viewer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container">
+        <div class="brand">
+          <h1 id="business-name">Stocks Viewer</h1>
+          <span class="tag" id="last-updated">connecting…</span>
+        </div>
+        <div class="status">
+          <span class="dot" id="status-dot"></span>
+          <span id="status-text">Loading…</span>
+          <button id="refresh-btn" type="button" title="Refresh now">Refresh</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="stats" class="stats" hidden>
+        <div class="stat"><div class="label">Total items</div><div class="value" id="stat-total">—</div></div>
+        <div class="stat warn"><div class="label">Low stock</div><div class="value" id="stat-low">—</div></div>
+        <div class="stat danger"><div class="label">Out of stock</div><div class="value" id="stat-out">—</div></div>
+      </section>
+
+      <section class="toolbar">
+        <input id="search" type="search" placeholder="Search by name, brand, SKU, category…" autocomplete="off" />
+        <select id="filter">
+          <option value="all">All items</option>
+          <option value="in">In stock</option>
+          <option value="low">Low stock</option>
+          <option value="out">Out of stock</option>
+        </select>
+      </section>
+
+      <section id="error-box" class="error-box" hidden></section>
+      <section id="config-box" class="error-box" hidden></section>
+
+      <div class="table-wrap">
+        <table id="stocks-table">
+          <thead>
+            <tr>
+              <th data-sort="name">Item</th>
+              <th data-sort="brand">Brand</th>
+              <th data-sort="category">Category</th>
+              <th data-sort="sku">SKU</th>
+              <th data-sort="quantityInStock" class="num">Qty</th>
+              <th data-sort="sellingPrice" class="num">Price</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="stocks-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="empty" id="empty-state" hidden>No items match your filters.</div>
+    </main>
+
+    <footer class="footer container">
+      <span>Read-only viewer · data published from desktop app via Google Drive</span>
+      <span id="poll-info"></span>
+    </footer>
+
+    <script src="./viewer.js"></script>
+  </body>
+</html>

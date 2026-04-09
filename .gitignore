@@ -1,0 +1,12 @@
+node_modules
+release
+dist
+dist-electron
+*.log
+.DS_Store
+# macOS AppleDouble metadata files (created when writing to exFAT/FAT/NTFS volumes)
+._*
+*.sqlite
+*.db
+# Local viewer config — contains the Google API key and Drive file ID
+web/config.json

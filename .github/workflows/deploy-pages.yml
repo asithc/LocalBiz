@@ -1,0 +1,55 @@
+name: Deploy stocks viewer to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject viewer config from secrets
+        env:
+          GOOGLE_DRIVE_FILE_ID: ${{ secrets.STOCKS_DRIVE_FILE_ID }}
+          GOOGLE_API_KEY: ${{ secrets.STOCKS_GOOGLE_API_KEY }}
+          POLL_SECONDS: ${{ vars.STOCKS_POLL_SECONDS || '30' }}
+        run: |
+          if [ -z "$GOOGLE_DRIVE_FILE_ID" ] || [ -z "$GOOGLE_API_KEY" ]; then
+            echo "ERROR: STOCKS_DRIVE_FILE_ID and STOCKS_GOOGLE_API_KEY repo secrets must be set."
+            echo "See web/README.md for setup instructions."
+            exit 1
+          fi
+          cat > web/config.json <<EOF
+          {
+            "googleDriveFileId": "${GOOGLE_DRIVE_FILE_ID}",
+            "googleApiKey": "${GOOGLE_API_KEY}",
+            "pollIntervalSeconds": ${POLL_SECONDS}
+          }
+          EOF
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./web
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
