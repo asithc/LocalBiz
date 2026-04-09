@@ -2,46 +2,91 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#FB1E2C" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <title>Stocks Viewer</title>
+    <meta name="description" content="Jayakula Brothers · Live stocks viewer" />
+    <link rel="icon" type="image/svg+xml" href="./branding/jayakula-symbol.svg" />
+    <link rel="apple-touch-icon" href="./branding/jayakula-symbol.svg" />
+    <title>Jayakula Brothers · Stocks</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <!-- ============================================================
+         Branded header
+         ============================================================ -->
     <header class="topbar">
       <div class="container">
-        <div class="brand">
-          <h1 id="business-name">Stocks Viewer</h1>
-          <span class="tag" id="last-updated">connecting…</span>
+        <div class="brand-mark">
+          <img src="./branding/jayakula-symbol.svg" alt="Jayakula Brothers" />
         </div>
-        <div class="status">
-          <span class="dot" id="status-dot"></span>
-          <span id="status-text">Loading…</span>
-          <button id="refresh-btn" type="button" title="Refresh now">Refresh</button>
+        <div class="brand-text">
+          <h1 id="business-name">Jayakula Brothers</h1>
+          <span class="sub">Live Stocks Viewer</span>
         </div>
+        <button id="refresh-btn" class="refresh-btn" type="button" aria-label="Refresh">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+            <path d="M21 4v6h-6" />
+          </svg>
+        </button>
       </div>
     </header>
 
-    <main class="container">
-      <section id="stats" class="stats" hidden>
-        <div class="stat"><div class="label">Total items</div><div class="value" id="stat-total">—</div></div>
-        <div class="stat warn"><div class="label">Low stock</div><div class="value" id="stat-low">—</div></div>
-        <div class="stat danger"><div class="label">Out of stock</div><div class="value" id="stat-out">—</div></div>
-      </section>
+    <!-- ============================================================
+         Compact status strip with inline stat chips
+         ============================================================ -->
+    <div class="status-strip">
+      <div class="container">
+        <span class="status">
+          <span class="dot" id="status-dot"></span>
+          <span id="status-text">Loading…</span>
+        </span>
+        <span class="status" id="last-updated" aria-live="polite">—</span>
+        <span class="stat-chips">
+          <span class="chip"        ><span class="num" id="stat-total">—</span> items</span>
+          <span class="chip warn"   ><span class="num" id="stat-low">—</span> low</span>
+          <span class="chip danger" ><span class="num" id="stat-out">—</span> out</span>
+        </span>
+      </div>
+    </div>
 
-      <section class="toolbar">
-        <input id="search" type="search" placeholder="Search by name, brand, SKU, category…" autocomplete="off" />
-        <select id="filter">
-          <option value="all">All items</option>
-          <option value="in">In stock</option>
-          <option value="low">Low stock</option>
-          <option value="out">Out of stock</option>
-        </select>
-      </section>
+    <!-- ============================================================
+         Toolbar — search + dynamic filter pill rails
+         ============================================================ -->
+    <div class="toolbar">
+      <div class="search-row">
+        <input id="search" type="search" inputmode="search" placeholder="Search items, brands, SKU…" autocomplete="off" aria-label="Search stock items" />
+      </div>
 
+      <!-- Status filter pills (always visible) -->
+      <div class="pill-rail" id="status-rail" role="tablist" aria-label="Stock status filter">
+        <span class="pill-rail-label">Status</span>
+        <button class="pill active" data-status="all" type="button">All</button>
+        <button class="pill tone-ok" data-status="in" type="button">In stock</button>
+        <button class="pill tone-warn" data-status="low" type="button">Low</button>
+        <button class="pill tone-danger" data-status="out" type="button">Out</button>
+      </div>
+
+      <!-- Category pills (rendered dynamically from data) -->
+      <div class="pill-rail" id="category-rail" aria-label="Category filter" hidden>
+        <span class="pill-rail-label">Type</span>
+      </div>
+
+      <!-- Brand pills (rendered dynamically from data) -->
+      <div class="pill-rail" id="brand-rail" aria-label="Brand filter" hidden>
+        <span class="pill-rail-label">Brand</span>
+      </div>
+    </div>
+
+    <main>
       <section id="error-box" class="error-box" hidden></section>
-      <section id="config-box" class="error-box" hidden></section>
+      <section id="config-box" class="config-box" hidden></section>
 
+      <!-- Mobile: card list -->
+      <section id="cards" class="cards" aria-label="Stock items"></section>
+
+      <!-- Tablet/desktop: table -->
       <div class="table-wrap">
         <table id="stocks-table">
           <thead>
@@ -62,9 +107,9 @@
       <div class="empty" id="empty-state" hidden>No items match your filters.</div>
     </main>
 
-    <footer class="footer container">
-      <span>Read-only viewer · data published from desktop app via Google Drive</span>
-      <span id="poll-info"></span>
+    <footer class="footer">
+      <span>Read-only · Jayakula Brothers</span>
+      <span class="sep" id="poll-info"></span>
     </footer>
 
     <script src="./viewer.js"></script>
