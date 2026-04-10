@@ -43,13 +43,26 @@ jobs:
       - name: Build renderer + main (TypeScript)
         run: npm run build
 
-      - name: Package installer (electron-builder handles native rebuild internally)
+      - name: Package installer
         shell: bash
-        run: npx electron-builder ${{ matrix.build_args }} --publish never
+        run: |
+          npx electron-builder ${{ matrix.build_args }} --publish never 2>&1 | tee build.log
+          exit_code=${PIPESTATUS[0]}
+          if [ $exit_code -ne 0 ]; then
+            echo "::error::electron-builder failed. Last 80 lines of output:"
+            tail -80 build.log
+            exit $exit_code
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Ensure node-gyp can find Python on Windows
-          PYTHON: python3
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-${{ matrix.os }}
+          path: build.log
+          retention-days: 7
 
       - name: List release output
         shell: bash
