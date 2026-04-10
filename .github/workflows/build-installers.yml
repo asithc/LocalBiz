@@ -40,18 +40,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build renderer + main (TypeScript → JS)
+      - name: Build renderer + main (TypeScript)
         run: npm run build
 
-      - name: Rebuild native modules for Electron
+      - name: Package installer (electron-builder handles native rebuild internally)
         shell: bash
-        run: npx @electron/rebuild -f -w better-sqlite3
-
-      - name: Package installer
-        shell: bash
-        run: npx electron-builder ${{ matrix.build_args }} -c.npmRebuild=false
+        run: npx electron-builder ${{ matrix.build_args }} --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Ensure node-gyp can find Python on Windows
+          PYTHON: python3
 
       - name: List release output
         shell: bash
