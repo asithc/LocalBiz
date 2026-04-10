@@ -2,11 +2,11 @@ name: Build desktop installers
 
 on:
   push:
-    tags: ["v*"]          # e.g.  git tag v1.0.1 && git push --tags
-  workflow_dispatch:       # manual trigger from Actions tab
+    tags: ["v*"]
+  workflow_dispatch:
 
 permissions:
-  contents: write          # needed to upload release assets
+  contents: write
 
 jobs:
   build:
@@ -31,7 +31,6 @@ jobs:
           node-version: 20
           cache: npm
 
-      # Windows needs Python + Visual Studio build tools for node-gyp
       - name: Setup Python (Windows)
         if: runner.os == 'Windows'
         uses: actions/setup-python@v5
@@ -41,15 +40,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Compile TypeScript (renderer + main) BEFORE electron-builder packages
-      - name: Build renderer + main
+      - name: Build renderer + main (TypeScript → JS)
         run: npm run build
 
-      # Now package — electron-builder will rebuild native modules for the target
+      - name: Rebuild native modules for Electron
+        shell: bash
+        run: npx @electron/rebuild -f -w better-sqlite3
+
       - name: Package installer
-        run: npx electron-builder ${{ matrix.build_args }}
+        shell: bash
+        run: npx electron-builder ${{ matrix.build_args }} -c.npmRebuild=false
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List release output
+        shell: bash
+        run: ls -lh release/ || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
